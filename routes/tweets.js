@@ -27,12 +27,18 @@ router.post("/new", (req, res) => {
         return res.json({ result: false, error: "User not found" });
       }
 
+      const hashtags = [
+        ...new Set(
+          (req.body.content.match(/#[A-zÀ-ú0-9]+/gi) || []).map(tag => tag.slice(1).toLowerCase())
+        )
+      ];
+
       const newTweet = new Tweet({
         content: req.body.content,
         author: userData._id,
         date: Date.now(),
         isLiked: [],
-        hashtag: (req.body.content.match(/#[A-zÀ-ú0-9]+/gi) || []).map(tag => tag.slice(1)),
+        hashtag: hashtags,
       });
 
       newTweet.save().then(() => {
