@@ -75,4 +75,26 @@ router.put('/picture', (req, res) => {
     });
   });
 
+  //CHANGEMENT FIRSTNAME
+router.put('/firstname', (req, res) => {
+  const token = req.body.token;
+
+  User.findOne({ token }).then((user) => {
+    if (!token || !user) {
+      return res.json({ result: false, error: "User not found" });
+    }
+    
+    User.updateOne({ token }, {firstname: req.body.firstname}).then((data) => {
+        if (data.modifiedCount > 0) {
+          User.findOne({ token })
+            .then((data) => {
+              res.json({ result: true, token: data.token, firstname: data.firstname });
+            });
+        } else {
+          res.json({ result: false, error: "Profile picture not updated" });
+        }
+      });
+    });
+  });
+
 module.exports = router;
